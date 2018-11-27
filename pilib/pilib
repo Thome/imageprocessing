@@ -69,8 +69,8 @@ def hist(image):
 	return histo
 
 def showhist1(histo):
-	x = np.arange(256)
-	plt.xlabel('Pixel')
+	x = np.arange(256).astype('uint8')
+	plt.xlabel('Intensidades')
 	plt.ylabel('Frequencia')
 	if(isgray(image)):
 		plt.bar(x, height= histo, color='grey')
@@ -84,16 +84,17 @@ def showhist1(histo):
 		plt.show()
 
 def showhist(histo,bin=1):
-	x = np.arange(256)
-	plt.xlabel('Pixel')
+	heights = np.arange(0).astype('uint8')
+	contador = 0
+	plt.xlabel('Intensidades')
 	plt.ylabel('Frequencia')
-	if(isgray(image)):
-		plt.bar(x, height= histo, color='grey')
-		plt.show()
-	else:
-		plt.bar(x, height= histo[:,0], color='red')
-		plt.show()
-		plt.bar(x, height= histo[:,1], color='green')
-		plt.show()
-		plt.bar(x, height= histo[:,2], color='blue')
-		plt.show()
+	while(contador<256):
+		aux = 0
+		for i in range(bin):
+			if(contador+i<256):
+				aux += histo[contador+i]
+		heights = np.append(heights,aux)
+		contador += bin
+	x = np.arange(len(heights)).astype('uint8')
+	plt.bar(x, height= heights, color= 'grey')
+	plt.show()
