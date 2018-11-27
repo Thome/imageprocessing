@@ -120,11 +120,22 @@ def showhist(histo,bin=1):
 def histeq(image):
 	histo = hist(image)
 	if(isgray(image)):
-		npixels = sum(histo)]
+		npixels = sum(histo)
 		fdp = []
 		aux = 0
 		for i in range(256):
 			aux += histo[i]/npixels
 			fdp = np.append(fdp, aux)
 		return floor(255 * fdp)
-	
+	else:
+		nrpixels = sum(histo[:,0])
+		ngpixels = sum(histo[:,1])
+		nbpixels = sum(histo[:,2])
+		fdp = []
+		aux = [0,0,0]
+		for i in range(256):
+			aux[0] += histo[:,0][i]/nrpixels
+			aux[1] += histo[:,1][i]/ngpixels
+			aux[2] += histo[:,2][i]/nbpixels
+			fdp = np.append(fdp, aux)
+		return floor(255 * fdp)
