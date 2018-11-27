@@ -88,13 +88,31 @@ def showhist(histo,bin=1):
 	contador = 0
 	plt.xlabel('Intensidades')
 	plt.ylabel('Frequencia')
-	while(contador<256):
-		aux = 0
-		for i in range(bin):
-			if(contador+i<256):
-				aux += histo[contador+i]
-		heights = np.append(heights,aux)
-		contador += bin
-	x = np.arange(len(heights)).astype('uint8')
-	plt.bar(x, height= heights, color= 'grey')
-	plt.show()
+	if(histo.shape[1] == 1): #if histo.shape == (XL,1L) 
+		while(contador<256):
+			aux = 0
+			for i in range(bin):
+				if(contador+i<256):
+					aux += histo[contador+i]
+			heights = np.append(heights,aux)
+			contador += bin
+		x = np.arange(len(heights)).astype('uint8')
+		plt.bar(x, height= heights, color= 'grey')
+		plt.show()
+	else:
+		while(contador<256):
+			aux = [0,0,0]
+			for i in range(bin):
+				if(contador+i<256):
+					aux[0] += histo[:,0][contador+i]
+					aux[1] += histo[:,1][contador+i]
+					aux[2] += histo[:,2][contador+i]
+			heights = np.append(heights,aux)
+			contador += bin
+		x = np.arange(len(heights)).astype('uint8')
+		plt.bar(x, height= heights[:,0], color= 'red')
+		plt.show()
+		plt.bar(x, height= heights[:,1], color='green')
+		plt.show()
+		plt.bar(x, height= heights[:,2], color='blue')
+		plt.show()
