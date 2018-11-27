@@ -30,7 +30,7 @@ def rgb2gray(image):
 def imreadgray(filename):
 	image = imread(filename)
 	#if(nchannels(image)==3):
-	if(!isgray(image)): #if rgb
+	if(NOT isgray(image)): #if rgb
 		image = rgb2gray(image)
 	return image
 
