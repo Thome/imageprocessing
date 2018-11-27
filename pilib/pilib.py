@@ -116,3 +116,15 @@ def showhist(histo,bin=1):
 		plt.show()
 		plt.bar(x, height= heights[:,2], color='blue')
 		plt.show()
+
+def histeq(image):
+	histo = hist(image)
+	if(isgray(image)):
+		npixels = sum(histo)]
+		fdp = []
+		aux = 0
+		for i in range(256):
+			aux += histo[i]/npixels
+			fdp = np.append(fdp, aux)
+		return floor(255 * fdp)
+	
