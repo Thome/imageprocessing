@@ -159,3 +159,8 @@ def convolvegray(image, mask):
 					soma += w * f
 			convolution[x,y] = soma
 	return convolution
+
+def maskBlur():
+	buf = np.array([[1,2,1],[2,4,2],[1,2,1]],dtype='uint8')
+	mask = np.ndarray(shape=(3,3),dtype='uint8',buffer=buf)
+	return (1/16) * mask
