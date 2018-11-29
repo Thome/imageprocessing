@@ -174,3 +174,9 @@ def seSquare3():
 
 def seCross3():
 	return np.array([[0,1,0],[1,1,1],[0,1,0]],dtype='uint8')
+
+def erode(image, bin_elem):
+	newimage = image.copy()
+	for i in range(image.shape[0]): #altura
+		for j in range(image.shape[1]): #largura
+			
