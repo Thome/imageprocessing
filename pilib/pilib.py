@@ -139,3 +139,23 @@ def histeq(image):
 			aux[2] += histo[:,2][i]/nbpixels
 			fdp = np.append(fdp, aux)
 		return floor(255 * fdp)
+
+def clamp(value, L):
+	return min(max(value,0), L)
+
+def convolvegray(image, mask):
+	convolution = np.ndarray(image.shape, dtype='uint8')
+	a = (mask.shape[0]-1)/2
+	b = (mask.shape[1]-1)/2
+	altura = image.shape[0]
+	largura = image.shape[1]
+	for x in range(altura):
+		for y in range(largura):
+			soma = 0
+			for s in range(-a,a+1):
+				for t in range(-b,b+1):
+					w = mask[s+1,t+1]
+					f = image[clamp(x+s,altura),clamp(y+t,largura)]
+					soma += w * f
+			convolution[x,y] = soma
+	return convolution
