@@ -164,3 +164,13 @@ def maskBlur():
 	buf = np.array([[1,2,1],[2,4,2],[1,2,1]],dtype='uint8')
 	mask = np.ndarray(shape=(3,3),dtype='uint8',buffer=buf)
 	return (1/16) * mask
+
+def blur(image):
+	mask = maskBlur()
+	return convolvegray(image, mask)
+
+def seSquare3():
+	return np.array([[1,1,1],[1,1,1],[1,1,1]],dtype='uint8')
+
+def seCross3():
+	return np.array([[0,1,0],[1,1,1],[0,1,0]],dtype='uint8')
