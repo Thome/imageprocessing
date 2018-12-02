@@ -17,9 +17,9 @@ def nchannels(image): #3 if RBG, 1 if grayscale
 
 def isgray(image):
 	if(nchannels(image)==1):
-		return true
+		return True
 	else:
-		return false
+		return False
 
 def size(image): #(altura, largura) => (largura, altura)
 	return [image.shape[1], image.shape[0]]
@@ -29,8 +29,7 @@ def rgb2gray(image):
 
 def imreadgray(filename):
 	image = imread(filename)
-	#if(nchannels(image)==3):
-	if(NOT isgray(image)): #if rgb
+	if(not isgray(image)): #if rgb
 		image = rgb2gray(image)
 	return image
 
@@ -141,9 +140,9 @@ def histeq(image):
 		return floor(255 * fdp)
 
 def clamp(value, L):
-	return min(max(value,0), L)
+	return min(max(value,0), L-1)
 
-def convolvegray(image, mask):
+def convolve(image, mask):
 	convolution = np.ndarray(image.shape, dtype='uint8')
 	a = (mask.shape[0]-1)/2
 	b = (mask.shape[1]-1)/2
@@ -151,7 +150,10 @@ def convolvegray(image, mask):
 	largura = image.shape[1]
 	for x in range(altura):
 		for y in range(largura):
-			soma = 0
+			if(isgray(image)):
+				soma = 0
+			else:
+				soma = [0,0,0]
 			for s in range(-a,a+1):
 				for t in range(-b,b+1):
 					w = mask[s+1,t+1]
@@ -163,11 +165,10 @@ def convolvegray(image, mask):
 def maskBlur():
 	buf = np.array([[1,2,1],[2,4,2],[1,2,1]],dtype='uint8')
 	mask = np.ndarray(shape=(3,3),dtype='uint8',buffer=buf)
-	return (1/16) * mask
+	return mask * 1.0/16
 
 def blur(image):
-	mask = maskBlur()
-	return convolvegray(image, mask)
+	return convolve(image, maskBlur())
 
 def seSquare3():
 	return np.array([[1,1,1],[1,1,1],[1,1,1]],dtype='uint8')
@@ -177,6 +178,48 @@ def seCross3():
 
 def erode(image, bin_elem):
 	newimage = image.copy()
-	for i in range(image.shape[0]): #altura
-		for j in range(image.shape[1]): #largura
-			
+	a = (bin_elem.shape[0]-1)/2
+	b = (bin_elem.shape[1]-1)/2
+	altura = image.shape[0]
+	largura = image.shape[1]
+	for i in range(altura):
+		for j in range(largura):
+			if(isgray(newimage)):
+				menor = 256
+			else:
+				menor = [256,256,256]
+			for s in range(-a,a+1):
+				for t in range(-b,b+1):
+					w = bin_elem[s+1,t+1]
+					if(w):
+						f = image[clamp(i+s,altura),clamp(j+t,largura)]
+						if(isgray(newimage)):
+							menor = min(menor, f)
+						else:
+							menor = np.minimum(menor, f)
+			newimage[i,j] = menor
+	return newimage
+
+def dilate(image, bin_elem):
+	newimage = image.copy()
+	a = (bin_elem.shape[0]-1)/2
+	b = (bin_elem.shape[1]-1)/2
+	altura = image.shape[0]
+	largura = image.shape[1]
+	for i in range(altura):
+		for j in range(largura):
+			if(isgray(newimage)):
+				maior = -1
+			else:
+				maior = [-1,-1,-1]
+			for s in range(-a,a+1):
+				for t in range(-b,b+1):
+					w = bin_elem[s+1,t+1]
+					if(w):
+						f = image[clamp(i+s,altura),clamp(j+t,largura)]
+						if(isgray(newimage)):
+							maior = max(maior, f)
+						else:
+							maior = np.maximum(maior, f)
+			newimage[i,j] = maior
+	return newimage
