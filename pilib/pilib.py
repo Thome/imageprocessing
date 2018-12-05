@@ -3,6 +3,7 @@ import numpy as np
 
 # shape = (number of lines, length of lines) (altura, largura)
 #[(x,y) for x in range(-1,2) if wc[x+1][y+1] == 1 for y in range(-1,2)]
+#[item for sublist in a for item in sublist]
 
 def imread(filename):
 	image = plt.imread(filename)
