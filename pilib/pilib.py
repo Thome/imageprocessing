@@ -2,8 +2,12 @@ import matplotlib, matplotlib.pyplot as plt
 import numpy as np
 
 # shape = (number of lines, length of lines) (altura, largura)
+'''def xyz(img,alt,lar,x,y,S):
+	return min([img[clamp(x+s[0],alt),clamp(y+s[1],lar)] for s in S])
+'''
 #[(x,y) for x in range(-1,2) if wc[x+1][y+1] == 1 for y in range(-1,2)]
 #[item for sublist in a for item in sublist]
+#
 
 def imread(filename):
 	image = plt.imread(filename)
