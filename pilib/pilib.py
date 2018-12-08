@@ -1,13 +1,8 @@
 import matplotlib, matplotlib.pyplot as plt
 import numpy as np
+import math
 
 # shape = (number of lines, length of lines) (altura, largura)
-'''def xyz(img,alt,lar,x,y,S):
-	return min([img[clamp(x+s[0],alt),clamp(y+s[1],lar)] for s in S])
-'''
-#[(x,y) for x in range(-1,2) if wc[x+1][y+1] == 1 for y in range(-1,2)]
-#[item for sublist in a for item in sublist]
-#
 
 def imread(filename):
 	image = plt.imread(filename)
@@ -36,7 +31,7 @@ def rgb2gray(image):
 def imreadgray(filename):
 	image = imread(filename)
 	if(not isgray(image)): #if rgb
-		image = rgb2gray(image)
+		image = (rgb2gray(image)).astype('uint8')
 	return image
 
 def imshow(image):
@@ -60,12 +55,12 @@ def contrast(f,r,m):
 
 def hist(image):
 	if(isgray(image)):
-		histo = np.zeros(256)
+		histo = (np.zeros(256)).astype(int)
 		for linha in image:
 			for pixel in linha:
 				histo[pixel] += 1
 	else: #if rgb
-		histo = np.zeros((256,3),dtype='uint8')
+		histo = (np.zeros((256,3))).astype(int)
 		for linha in image:
 			for pixel in linha:
 				for color in range(3): #1=r,2=g,3=b
@@ -73,77 +68,114 @@ def hist(image):
 					histo[pixelcor][color] += 1
 	return histo
 
-def showhist1(histo):
+def altshowhist(histo):
 	x = np.arange(256).astype('uint8')
-	plt.xlabel('Intensidades')
-	plt.ylabel('Frequencia')
-	if(isgray(image)):
+	if(len(histo.shape)==1): #if histo.shape == (256L,)
+		plt.xlabel('Intensidades')
+		plt.ylabel('Frequencia')
 		plt.bar(x, height= histo, color='grey')
 		plt.show()
-	else:
-		plt.bar(x, height= histo[:,0], color='red')
-		plt.show()
-		plt.bar(x, height= histo[:,1], color='green')
-		plt.show()
-		plt.bar(x, height= histo[:,2], color='blue')
+	else:					 #if histo.shape == (256L,3L)
+		fig, ax = plt.subplots()
+		index = np.arange(256)
+		bar_width = 0.35
+		opacity = 0.4
+		error_config = {'ecolor': '0.3'}
+
+		rects1 = ax.bar(index, histo[:,0], bar_width,
+                alpha=opacity, color='r',
+                error_kw=error_config,
+                label='Red')
+		rects2 = ax.bar(index+bar_width, histo[:,1], bar_width,
+                alpha=opacity, color='g',
+                error_kw=error_config,
+                label='Green')
+		rects3 = ax.bar(index+bar_width*2, histo[:,2], bar_width,
+                alpha=opacity, color='b',
+                error_kw=error_config,
+                label='Blue')
+
+		ax.set_xlabel('Intensidades')
+		ax.set_ylabel('Frequencia')
+		ax.legend()
+		fig.tight_layout()
+		'''width = 0.8
+		plt.bar(x, height= histo[:,0], width=width, color='red')
+		plt.bar(x+width, height= histo[:,1], width=width, color='green')
+		plt.bar(x+width*2, height= histo[:,2], width=width, color='blue')'''
 		plt.show()
 
-def showhist(histo,bin=1):
-	heights = np.arange(0).astype('uint8')
+def showhist(histo,Bin=1):
 	contador = 0
-	plt.xlabel('Intensidades')
-	plt.ylabel('Frequencia')
-	if(histo.shape[1] == 1): #if histo.shape == (XL,1L) 
+	if(len(histo.shape) == 1): #if histo.shape == (256L,) 
+		heights = np.arange(0).astype('uint8')
 		while(contador<256):
-			aux = 0
-			for i in range(bin):
-				if(contador+i<256):
-					aux += histo[contador+i]
-			heights = np.append(heights,aux)
-			contador += bin
+			heights = np.append(heights,sum(histo[contador:contador+Bin]))
+			contador += Bin
 		x = np.arange(len(heights)).astype('uint8')
+		plt.xlabel('Intensidades')
+		plt.ylabel('Frequencia')
 		plt.bar(x, height= heights, color= 'grey')
 		plt.show()
-	else:
+	else:					   #if histo.shape == (256L,3L)
+
 		while(contador<256):
-			aux = [0,0,0]
-			for i in range(bin):
-				if(contador+i<256):
-					aux[0] += histo[:,0][contador+i]
-					aux[1] += histo[:,1][contador+i]
-					aux[2] += histo[:,2][contador+i]
-			heights = np.append(heights,aux)
-			contador += bin
-		x = np.arange(len(heights)).astype('uint8')
+			aux = np.array([[0,0,0]])
+			aux[0,0] = sum(histo[:,0][contador:contador+Bin])
+			aux[0,1] = sum(histo[:,1][contador:contador+Bin])
+			aux[0,2] = sum(histo[:,2][contador:contador+Bin])
+			if(contador == 0):
+				heights = aux
+			else:
+				heights = np.append(heights,aux,0)
+			contador += Bin
+
+		'''heights = np.array([[heights[x+i] for x in range(0,3)] for i in range(0,len(heights)-1,Bin)])
+		heights = np.append(heights,[aux],0)'''
+		
+		fig, ax = plt.subplots()
+		index = np.arange(len(heights))
+		bar_width = 0.35
+		opacity = 0.4
+		error_config = {'ecolor': '0.3'}
+
+		rects1 = ax.bar(index, heights[:,0], bar_width,
+                alpha=opacity, color='r',
+                error_kw=error_config,
+                label='Red')
+		rects2 = ax.bar(index+bar_width, heights[:,1], bar_width,
+                alpha=opacity, color='g',
+                error_kw=error_config,
+                label='Green')
+		rects3 = ax.bar(index+bar_width*2, heights[:,2], bar_width,
+                alpha=opacity, color='b',
+                error_kw=error_config,
+                label='Blue')
+
+		ax.set_xlabel('Bins')
+		ax.set_ylabel('Intensidades')
+		ax.legend()
+		fig.tight_layout()
+		plt.show()
+		'''x = np.arange(len(heights)).astype('uint8')
 		plt.bar(x, height= heights[:,0], color= 'red')
 		plt.show()
 		plt.bar(x, height= heights[:,1], color='green')
 		plt.show()
 		plt.bar(x, height= heights[:,2], color='blue')
-		plt.show()
+		plt.show()'''
 
 def histeq(image):
 	histo = hist(image)
-	if(isgray(image)):
-		npixels = sum(histo)
-		fdp = []
-		aux = 0
-		for i in range(256):
-			aux += histo[i]/npixels
-			fdp = np.append(fdp, aux)
-		return floor(255 * fdp)
-	else:
-		nrpixels = sum(histo[:,0])
-		ngpixels = sum(histo[:,1])
-		nbpixels = sum(histo[:,2])
-		fdp = []
-		aux = [0,0,0]
-		for i in range(256):
-			aux[0] += histo[:,0][i]/nrpixels
-			aux[1] += histo[:,1][i]/ngpixels
-			aux[2] += histo[:,2][i]/nbpixels
-			fdp = np.append(fdp, aux)
-		return floor(255 * fdp)
+	#print(histo)
+	npixels = sum(histo)
+	#print(npixels)
+	fdp = [float(p)/npixels for p in histo]
+	#print(fdp)
+	#print(len(fdp))
+	H = [math.floor(255 * round(sum(i),8)) for i in [fdp[0:j] for j in range(1,len(fdp)+1)]]
+	#print(H)
+	return np.array([[H[px] for px in row] for row in image], dtype='uint8')
 
 def clamp(value, L):
 	return min(max(value,0), L-1)
@@ -182,50 +214,40 @@ def seSquare3():
 def seCross3():
 	return np.array([[0,1,0],[1,1,1],[0,1,0]],dtype='uint8')
 
+def getmin(img,alt,lar,x,y,S):
+	if(isgray(img)):
+		return min([img[clamp(x+s[0],alt),clamp(y+s[1],lar)] for s in S])
+	else:
+		aux = np.array([img[clamp(x+s[0],alt),clamp(y+s[1],lar)] for s in S])
+		return [min(aux[:,0]),min(aux[:,1]),min(aux[:,2])]
+
 def erode(image, bin_elem):
 	newimage = image.copy()
-	a = (bin_elem.shape[0]-1)/2
-	b = (bin_elem.shape[1]-1)/2
+	tuplas = [(x,y) for x in range(-1,2) 
+				for y in range(-1,2)
+				if bin_elem[x+1][y+1] == 1]
 	altura = image.shape[0]
 	largura = image.shape[1]
 	for i in range(altura):
 		for j in range(largura):
-			if(isgray(newimage)):
-				menor = 256
-			else:
-				menor = [256,256,256]
-			for s in range(-a,a+1):
-				for t in range(-b,b+1):
-					w = bin_elem[s+1,t+1]
-					if(w):
-						f = image[clamp(i+s,altura),clamp(j+t,largura)]
-						if(isgray(newimage)):
-							menor = min(menor, f)
-						else:
-							menor = np.minimum(menor, f)
-			newimage[i,j] = menor
+			newimage[i,j] = getmin(image,altura,largura,i,j,tuplas)
 	return newimage
+
+def getmax(img,alt,lar,x,y,S):
+	if(isgray(img)):
+		return max([img[clamp(x+s[0],alt),clamp(y+s[1],lar)] for s in S])
+	else:
+		aux = np.array([img[clamp(x+s[0],alt),clamp(y+s[1],lar)] for s in S])
+		return [max(aux[:,0]),max(aux[:,1]),max(aux[:,2])]
 
 def dilate(image, bin_elem):
 	newimage = image.copy()
-	a = (bin_elem.shape[0]-1)/2
-	b = (bin_elem.shape[1]-1)/2
+	tuplas = [(x,y) for x in range(-1,2)
+				for y in range(-1,2)
+				if bin_elem[x+1][y+1] == 1]
 	altura = image.shape[0]
 	largura = image.shape[1]
 	for i in range(altura):
 		for j in range(largura):
-			if(isgray(newimage)):
-				maior = -1
-			else:
-				maior = [-1,-1,-1]
-			for s in range(-a,a+1):
-				for t in range(-b,b+1):
-					w = bin_elem[s+1,t+1]
-					if(w):
-						f = image[clamp(i+s,altura),clamp(j+t,largura)]
-						if(isgray(newimage)):
-							maior = max(maior, f)
-						else:
-							maior = np.maximum(maior, f)
-			newimage[i,j] = maior
+			newimage[i,j] = getmax(image,altura,largura,i,j,tuplas)
 	return newimage
