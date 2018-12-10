@@ -202,9 +202,11 @@ def getmin(img,alt,lar,x,y,S):
 
 def erode(image, bin_elem):
 	newimage = image.copy()
-	tuplas = [(x,y) for x in range(-1,2) 
-				for y in range(-1,2)
-				if bin_elem[x+1][y+1] == 1]
+	a = (bin_elem.shape[0]-1)/2
+	b = (bin_elem.shape[1]-1)/2
+	tuplas = [(x,y) for x in range(-a,a+1) 
+				for y in range(-b,b+1)
+				if bin_elem[x+a][y+b] == 1]
 	altura = image.shape[0]
 	largura = image.shape[1]
 	for i in range(altura):
@@ -221,9 +223,11 @@ def getmax(img,alt,lar,x,y,S):
 
 def dilate(image, bin_elem):
 	newimage = image.copy()
-	tuplas = [(x,y) for x in range(-1,2)
-				for y in range(-1,2)
-				if bin_elem[x+1][y+1] == 1]
+	a = (bin_elem.shape[0]-1)/2
+	b = (bin_elem.shape[1]-1)/2
+	tuplas = [(x,y) for x in range(-a,a+1) 
+				for y in range(-b,b+1)
+				if bin_elem[x+a][y+b] == 1]
 	altura = image.shape[0]
 	largura = image.shape[1]
 	for i in range(altura):
