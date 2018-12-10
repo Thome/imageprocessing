@@ -173,7 +173,7 @@ def convolve(image, mask):
 				soma = [0,0,0]
 			for s in range(-a,a+1):
 				for t in range(-b,b+1):
-					w = mask[s+1,t+1]
+					w = mask[s+a,t+b]
 					f = image[clamp(x+s,altura),clamp(y+t,largura)]
 					soma += w * f
 			convolution[x,y] = soma
