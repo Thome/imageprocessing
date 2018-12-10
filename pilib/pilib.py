@@ -34,9 +34,9 @@ def imreadgray(filename):
 
 def imshow(image):
 	if(isgray(image)):
-		plt.imshow(image, cmap='gray')
+		plt.imshow(image, cmap='gray', interpolation='nearest')
 	else:
-		plt.imshow(image)
+		plt.imshow(image, interpolation='nearest')
 	plt.show()
 
 def thresh(image, threshold):
