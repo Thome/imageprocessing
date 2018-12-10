@@ -2,8 +2,6 @@ import matplotlib, matplotlib.pyplot as plt
 import numpy as np
 import math
 
-# shape = (number of lines, length of lines) (altura, largura)
-
 def imread(filename):
 	image = plt.imread(filename)
 	if (image.dtype == 'float32'): #if image is .png
@@ -99,10 +97,6 @@ def altshowhist(histo):
 		ax.set_ylabel('Frequencia')
 		ax.legend()
 		fig.tight_layout()
-		'''width = 0.8
-		plt.bar(x, height= histo[:,0], width=width, color='red')
-		plt.bar(x+width, height= histo[:,1], width=width, color='green')
-		plt.bar(x+width*2, height= histo[:,2], width=width, color='blue')'''
 		plt.show()
 
 def showhist(histo,Bin=1):
@@ -130,9 +124,6 @@ def showhist(histo,Bin=1):
 				heights = np.append(heights,aux,0)
 			contador += Bin
 
-		'''heights = np.array([[heights[x+i] for x in range(0,3)] for i in range(0,len(heights)-1,Bin)])
-		heights = np.append(heights,[aux],0)'''
-		
 		fig, ax = plt.subplots()
 		index = np.arange(len(heights))
 		bar_width = 0.35
@@ -157,24 +148,12 @@ def showhist(histo,Bin=1):
 		ax.legend()
 		fig.tight_layout()
 		plt.show()
-		'''x = np.arange(len(heights)).astype('uint8')
-		plt.bar(x, height= heights[:,0], color= 'red')
-		plt.show()
-		plt.bar(x, height= heights[:,1], color='green')
-		plt.show()
-		plt.bar(x, height= heights[:,2], color='blue')
-		plt.show()'''
 
 def histeq(image):
 	histo = hist(image)
-	#print(histo)
 	npixels = sum(histo)
-	#print(npixels)
 	fdp = [float(p)/npixels for p in histo]
-	#print(fdp)
-	#print(len(fdp))
 	H = [math.floor(255 * round(sum(i),8)) for i in [fdp[0:j] for j in range(1,len(fdp)+1)]]
-	#print(H)
 	return np.array([[H[px] for px in row] for row in image], dtype='uint8')
 
 def clamp(value, L):
