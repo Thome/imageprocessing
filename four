@@ -1,0 +1,21 @@
+import numpy as np
+import numpy.fft as fft
+import matplotlib.pyplot as plt
+
+def fourier(image):
+    def aux(u,v):
+        pixel = 0
+        for x in range(0,m):
+            for y in range(0,n):
+                pixel += image[x,y] * np.exp(np.complex(0,-1)*2*np.pi*((u*x)/m+(v*y)/n))
+        return pixel   
+    
+    G = image.copy()
+    m,n = image.shape
+    for x in range(0,m):
+        for y in range(0,n):
+            G[x,y] = aux(x, y)
+    return G/(m*n)
+    
+
+    
